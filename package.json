@@ -2,12 +2,16 @@
   "name": "desafio_hubla",
   "version": "0.0.1",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node src/server.js",
+    "test": "jest"
   },
   "author": "Marcelo Almeida <marcelocralmeida@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.3",
     "multer": "^1.4.4"
+  },
+  "devDependencies": {
+    "jest": "^27.5.1"
   }
 }
