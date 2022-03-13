@@ -18,7 +18,11 @@
     ReactDOM.render(
       <div>
         <a href="/">Home</a>{' '}
-        <a href="/transactions">Transações</a>
+        <a href="/transactions.html">Transações</a>
+        <form enctype="multipart/form-data" action="/upload_file" method="post">
+          <input type="file" />
+          <input type="submit" />
+        </form>
       </div>,
       document.getElementById('root')
     );
