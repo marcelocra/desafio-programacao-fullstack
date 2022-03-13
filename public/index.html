@@ -20,8 +20,8 @@
         <a href="/">Home</a>{' '}
         <a href="/transactions.html">Transações</a>
         <form enctype="multipart/form-data" action="/upload_file" method="post">
-          <input type="file" />
-          <input type="submit" />
+          <input type="file" name="uploaded_file" />
+          <input type="submit" value="Enviar arquivo" class="btn btn-deault" />
         </form>
       </div>,
       document.getElementById('root')
