@@ -1,5 +1,4 @@
-const parseSingleLineStr = require('./parser').parseSingleLineStr
-const parseMultiLineStr = require('./parser').parseMultiLineStr
+const parseTransactions = require('./parser')
 
 
 var exampleLine = `12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS`
@@ -10,27 +9,27 @@ var exampleMultiLine = `12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            
 `
 
 test('parse the transaction type correctly', () => {
-  expect(parseSingleLineStr(exampleLine).type).toBe(1)
+  expect(parseTransactions(exampleLine)[0].type).toBe(1)
 })
 
 test('parse the date correctly', () => {
-  expect(parseSingleLineStr(exampleLine).date).toEqual(new Date('2022-01-15T22:20:30Z'))
+  expect(parseTransactions(exampleLine)[0].date).toEqual(new Date('2022-01-15T22:20:30Z'))
 })
 
 test('parse product name correctly', () => {
-  expect(parseSingleLineStr(exampleLine).product).toBe('CURSO DE BEM-ESTAR')
+  expect(parseTransactions(exampleLine)[0].product).toBe('CURSO DE BEM-ESTAR')
 })
 
 test('parse price correctly', () => {
-  expect(parseSingleLineStr(exampleLine).price).toBe(127.50)
+  expect(parseTransactions(exampleLine)[0].price).toBe(127.50)
 })
 
 test('parse affilate name correctly', () => {
-  expect(parseSingleLineStr(exampleLine).affiliateName).toBe('JOSE CARLOS')
+  expect(parseTransactions(exampleLine)[0].affiliateName).toBe('JOSE CARLOS')
 })
 
 test('parse many records at the same time', () => {
-  let parsedLines = parseMultiLineStr(exampleMultiLine)
+  let parsedLines = parseTransactions(exampleMultiLine)
   expect(parsedLines[0]).toEqual({
     type: 1,
     date: new Date('2022-01-15T22:20:30Z'),

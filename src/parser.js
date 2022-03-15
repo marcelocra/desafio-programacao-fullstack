@@ -5,24 +5,29 @@
 //   price: num                {   57,  66,   10}
 //   affiliateName: string     {   67,  86,   20}
 // }
-
-function parseSingleLineStr(singleTransactionStr) {
+function parseTransaction(transaction) {
   return {
-    type: parseInt(singleTransactionStr.slice(0, 1)),
-    date: new Date(singleTransactionStr.slice(1, 26)),
-    product: singleTransactionStr.slice(26, 56).trim(),
-    price: parseFloat(singleTransactionStr.slice(56, 66))/100,
-    affiliateName: singleTransactionStr.slice(66, 86)
+    type: parseInt(transaction.slice(0, 1)),
+    date: new Date(transaction.slice(1, 26)),
+    product: transaction.slice(26, 56).trim(),
+    price: parseFloat(transaction.slice(56, 66))/100,
+    affiliateName: transaction.slice(66, 86)
   }
 }
 
-function parseMultiLineStr(multipleTransactionStr) {
-  return multipleTransactionStr
-    .split('\n')
-    .map(singleTransactionStr => parseSingleLineStr(singleTransactionStr))
+function isValidTransaction(transaction) {
+  if (transaction.length < 67 || transaction.length >= 87) {
+    return false;
+  }
+
+  return true;
 }
 
-module.exports = {
-  parseSingleLineStr,
-  parseMultiLineStr
+function parseTransactions(transactions) {
+  return transactions
+    .split('\n')
+    .filter(transaction => isValidTransaction(transaction))
+    .map(transaction => parseTransaction(transaction))
 }
+
+module.exports = parseTransactions
