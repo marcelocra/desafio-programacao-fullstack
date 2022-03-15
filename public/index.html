@@ -14,13 +14,35 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
+    function handleSubmit(event) {
+      // Do not submit this form. We don't want a page refresh.
+      event.preventDefault();
+
+      // Let's handle the form directly.
+      let formData = new FormData();
+      formData.append('products', document.getElementById('products').files[0]);
+      fetch('/upload_file', {method: 'POST', body: formData});
+    }
+
+    function TestComponent() {
+      const [count, setCount] = React.useState();
+
+      React.useEffect(() => {
+        setTimeout(() => setCount(10), 2000);
+      }, []);
+
+      return (<div>
+        <p>Count is: {count}</p>  
+      </div>);
+    }
 
     ReactDOM.render(
       <div>
-        <a href="/">Home</a>{' '}
-        <a href="/transactions.html">Transações</a>
-        <form enctype="multipart/form-data" action="/upload_file" method="post">
-          <input type="file" name="uploaded_file" />
+        <form enctype="multipart/form-data"
+              action="/upload_file"
+              method="post"
+              onSubmit={handleSubmit}>
+          <input type="file" id="products" />
           <input type="submit" value="Enviar arquivo" class="btn btn-deault" />
         </form>
       </div>,

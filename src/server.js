@@ -10,7 +10,7 @@ const port = 8000
 app.use(express.static('public'))
 
 
-app.post('/upload_file', upload.single('uploaded_file'), (req, res) => {
+app.post('/upload_file', upload.single('products'), (req, res) => {
   console.log(req.file.buffer.toString())
 })
 
