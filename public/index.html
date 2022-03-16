@@ -49,7 +49,7 @@
     }
 
     function TableComponent(props) {
-      const [tableData, setTableData] = React.useState(null);
+      const [tableData, setTableData] = React.useState(new Map());
 
       React.useEffect(() => {
         fetch('/transactions')
@@ -81,7 +81,7 @@
 
       return (
         <div>
-          {tableData ? Array.from(tableData).map(
+          {tableData.size !== 0 ? Array.from(tableData).map(
             ([affiliateName, { transactions, sum }]) => {
               return (
                 <div key={affiliateName}>  
@@ -111,7 +111,7 @@
                 </div>
               )
             }
-          ) : ''}
+          ) : <p>Nenhuma transação ainda. Carregue um arquivo.</p>}
         </div>
       );
     }
