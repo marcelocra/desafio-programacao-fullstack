@@ -13,12 +13,28 @@ const port = 8000
 app.use(express.static('public'))
 
 
+app.get('/transactions', (req, res) => {
+  res.json(db.prepare(`
+    select 
+        t.id as id,
+        t.date as date,
+        t.price as price,
+        a.name as name,
+        p.name as pname,
+        tt.description as desc,
+        tt.operation as op
+      from transactions t
+      inner join products p on t.product_id = p.id
+      inner join affiliates a on t.affiliate_id = a.id
+      inner join transaction_types tt on t.transaction_type = tt.type
+  `).all())
+});
+
+
 app.post('/upload_file', upload.single('products'), (req, res) => {
   const transactions = parseTransactions(req.file.buffer.toString())
   
   for (let transaction of transactions) {
-    console.log({transaction})
-
     let productId = db.prepare('select id from products where name = ?')
       .get(transaction.product)
     if (productId) {
@@ -45,8 +61,9 @@ app.post('/upload_file', upload.single('products'), (req, res) => {
       values
         (?, ?, ?, ?, ?)`)
       .run(transaction.type, productId, affiliateId, transaction.date.toISOString(), transaction.price)
-    console.log({info})
   }
+
+  res.end();
 })
 
 

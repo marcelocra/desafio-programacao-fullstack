@@ -3,48 +3,150 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Hello World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hub.la Manager</title>
   <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 
   <!-- Don't use this in production: -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    function handleSubmit(event) {
-      // Do not submit this form. We don't want a page refresh.
-      event.preventDefault();
+    function FormComponent() {
+      function handleSubmit(event) {
+        // Do not submit this form. We don't want a page refresh.
+        event.preventDefault();
 
-      // Let's handle the form directly.
-      let formData = new FormData();
-      formData.append('products', document.getElementById('products').files[0]);
-      fetch('/upload_file', {method: 'POST', body: formData});
+        // Let's handle the form directly.
+        let formData = new FormData();
+        formData.append('products', document.getElementById('products').files[0]);
+        document.getElementById('submit').classList.add('is-loading');
+        fetch('/upload_file', {method: 'POST', body: formData})
+          .then(response => {
+            document.getElementById('submit').classList.remove('is-loading');
+          });
+      }
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <input type="file" id="products" />
+          <br />
+          <br />
+          <button type="submit" className="button is-dark is-small" id="submit">
+            Enviar
+          </button>
+        </form>
+      );
     }
 
-    function TestComponent() {
-      const [count, setCount] = React.useState();
+    function TableComponent() {
+      const [tableData, setTableData] = React.useState(null);
 
       React.useEffect(() => {
-        setTimeout(() => setCount(10), 2000);
+        fetch('/transactions')
+          .then(response => response.json())
+          .then(transactions => {
+            let map = new Map();
+            for (let t of transactions) {
+              if (!map.get(t.name)) {
+                map.set(t.name, {transactions: [], sum: 0});
+              }
+              
+              let affiliate = map.get(t.name);
+              affiliate.transactions.push(t);
+              if (t.op === '+') {
+                affiliate.sum += t.price
+              } else if (t.op === '-') {
+                affiliate.sum -= t.price
+              } else {
+                // This shouldn't happen for now.
+                console.error("Should not happen. Check the 'operation' in the 'transaction_types' table")
+              }
+            }
+            
+            setTableData(map);
+            return map;
+          })
+          .catch(err => console.err);
       }, []);
 
-      return (<div>
-        <p>Count is: {count}</p>  
-      </div>);
+      return (
+        <div>
+          {tableData ? Array.from(tableData).map(
+            ([affiliateName, { transactions, sum }]) => {
+              return (
+                <div key={affiliateName}>  
+                  <h4>{affiliateName}: {sum}</h4>
+                  <table className="table is-fullwidth">
+                    <thead>
+                      <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Produto</th>
+                        <th>Preço</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transactions.map(t => {
+                        return (
+                          <tr key={t.id}>
+                            <td>{new Date(t.date).toLocaleString()}</td>
+                            <td>{t.desc}</td>
+                            <td>{t.pname}</td>
+                            <td>{t.price}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            }
+          ) : ''}
+        </div>
+      );
     }
-
+    
     ReactDOM.render(
       <div>
-        <form enctype="multipart/form-data"
-              action="/upload_file"
-              method="post"
-              onSubmit={handleSubmit}>
-          <input type="file" id="products" />
-          <input type="submit" value="Enviar arquivo" class="btn btn-deault" />
-        </form>
+        <section className="section s1">
+          <div className="container has-text-centered">
+            <header className="section-header">
+              <h1 className="title is-spaced is-size-1-mobile has-text-weight-bold">
+                Hub.la Manager
+              </h1>
+              <div className="subtitle is-size-5 is-size-4-tablet">
+                <span className="is-block is-size-6 is-size-5-tablet s1-file">
+                  Ao escolher um arquivo, ele será processado e exibido na seção abaixo.
+                  <br />
+                  <br />
+                  <FormComponent />
+                </span>
+              </div>
+            </header>
+          </div>
+        </section>
+        <section className="section">
+          <div className="container has-text-centered">
+            <header className="section-header s2-h1">
+              <h1 className="subtitle">
+                Transações
+              </h1>
+            </header>
+          </div>
+          <div className="columns is-mobile is-centered">
+            <div className="column is-three-quarters">
+              <TableComponent />
+            </div>
+          </div>
+        </section>
       </div>,
       document.getElementById('root')
     );
