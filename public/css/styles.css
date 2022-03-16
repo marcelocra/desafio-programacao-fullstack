@@ -1,3 +1,7 @@
+body {
+  min-width: 540px;
+}
+
 .s1 {
   background: linear-gradient( 180deg, #D7FF60 0%, #fff 100% );
   padding-bottom: 0px;

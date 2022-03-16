@@ -19,7 +19,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    function FormComponent() {
+    function FormComponent(props) {
       function handleSubmit(event) {
         // Do not submit this form. We don't want a page refresh.
         event.preventDefault();
@@ -31,6 +31,8 @@
         fetch('/upload_file', {method: 'POST', body: formData})
           .then(response => {
             document.getElementById('submit').classList.remove('is-loading');
+            props.setUpdateTransactionUi(x => x + 1);
+            document.getElementById('transactions').scrollIntoView({block: "start", behavior: "smooth"})
           });
       }
 
@@ -46,7 +48,7 @@
       );
     }
 
-    function TableComponent() {
+    function TableComponent(props) {
       const [tableData, setTableData] = React.useState(null);
 
       React.useEffect(() => {
@@ -75,7 +77,7 @@
             return map;
           })
           .catch(err => console.err);
-      }, []);
+      }, [props.updateTransactionUi]);
 
       return (
         <div>
@@ -113,41 +115,49 @@
         </div>
       );
     }
+
+    function App() {
+      const [updateTransactionUi, setUpdateTransactionUi] = React.useState(0);
+
+      return (
+        <div className="app">
+          <section className="section s1">
+            <div className="container has-text-centered">
+              <header className="section-header">
+                <h1 className="title is-spaced is-size-1-mobile has-text-weight-bold">
+                  Hub.la Manager
+                </h1>
+                <div className="subtitle is-size-5 is-size-4-tablet">
+                  <span className="is-block is-size-6 is-size-5-tablet s1-file">
+                    Ao escolher um arquivo, ele será processado e exibido na seção abaixo.
+                    <br />
+                    <br />
+                    <FormComponent setUpdateTransactionUi={setUpdateTransactionUi} />
+                  </span>
+                </div>
+              </header>
+            </div>
+          </section>
+          <section className="section">
+            <div className="container has-text-centered">
+              <header className="section-header s2-h1">
+                <h1 className="subtitle" id="transactions">
+                  Transações
+                </h1>
+              </header>
+            </div>
+            <div className="columns is-mobile is-centered">
+              <div className="column is-three-quarters">
+                <TableComponent updateTransactionUi={updateTransactionUi} />
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    }
     
     ReactDOM.render(
-      <div>
-        <section className="section s1">
-          <div className="container has-text-centered">
-            <header className="section-header">
-              <h1 className="title is-spaced is-size-1-mobile has-text-weight-bold">
-                Hub.la Manager
-              </h1>
-              <div className="subtitle is-size-5 is-size-4-tablet">
-                <span className="is-block is-size-6 is-size-5-tablet s1-file">
-                  Ao escolher um arquivo, ele será processado e exibido na seção abaixo.
-                  <br />
-                  <br />
-                  <FormComponent />
-                </span>
-              </div>
-            </header>
-          </div>
-        </section>
-        <section className="section">
-          <div className="container has-text-centered">
-            <header className="section-header s2-h1">
-              <h1 className="subtitle">
-                Transações
-              </h1>
-            </header>
-          </div>
-          <div className="columns is-mobile is-centered">
-            <div className="column is-three-quarters">
-              <TableComponent />
-            </div>
-          </div>
-        </section>
-      </div>,
+      <App />,
       document.getElementById('root')
     );
 
