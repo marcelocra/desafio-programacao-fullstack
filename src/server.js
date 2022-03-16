@@ -2,7 +2,10 @@ const express = require('express')
 const multer = require('multer')
 const db = require('better-sqlite3')('./db/hubla.sqlite3')
 
-const parseTransactions = require('./parser')
+const {
+  fetchAllTransactions,
+  processUploadedFileAndSaveToDatabase,
+} = require('./db_handler')
 
 const fileUploadStorage = multer.memoryStorage()
 const upload = multer({ storage: fileUploadStorage })
@@ -13,55 +16,17 @@ const port = 8000
 app.use(express.static('public'))
 
 
+// Returns a JSON with the producers/affiliates transactions, prepared to be
+// used by the frontend.
 app.get('/transactions', (req, res) => {
-  res.json(db.prepare(`
-    select 
-        t.id as id,
-        t.date as date,
-        t.price as price,
-        a.name as name,
-        p.name as pname,
-        tt.description as desc,
-        tt.operation as op
-      from transactions t
-      inner join products p on t.product_id = p.id
-      inner join affiliates a on t.affiliate_id = a.id
-      inner join transaction_types tt on t.transaction_type = tt.type
-  `).all())
+  res.json(fetchAllTransactions(db))
 });
 
 
+// Receives the uploaded file, sent by the user, parsing, normalizing and
+// storing it in the database (sqlite).
 app.post('/upload_file', upload.single('products'), (req, res) => {
-  const transactions = parseTransactions(req.file.buffer.toString())
-  
-  for (let transaction of transactions) {
-    let productId = db.prepare('select id from products where name = ?')
-      .get(transaction.product)
-    if (productId) {
-      productId = productId.id
-    } else  {
-      productId = db.prepare('insert into products (name) values (?)')
-        .run(transaction.product)
-        .lastInsertRowid
-      
-    } 
-
-    let affiliateId = db.prepare('select id from affiliates where name = ?').get(transaction.affiliateName)
-    if (affiliateId) {
-      affiliateId = affiliateId.id
-    } else {
-      affiliateId = db.prepare('insert into affiliates (name) values (?)')
-        .run(transaction.affiliateName)
-        .lastInsertRowid
-    }
-
-    let info = db.prepare(`
-      insert into transactions
-        (transaction_type, product_id, affiliate_id, date, price)
-      values
-        (?, ?, ?, ?, ?)`)
-      .run(transaction.type, productId, affiliateId, transaction.date.toISOString(), transaction.price)
-  }
+  processUploadedFileAndSaveToDatabase(db, req.file.buffer.toString())
 
   res.end();
 })
