@@ -50,6 +50,7 @@
 
     function TableComponent(props) {
       const [tableData, setTableData] = React.useState(new Map());
+      const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL'})
 
       React.useEffect(() => {
         fetch('/transactions')
@@ -84,9 +85,9 @@
           {tableData.size !== 0 ? Array.from(tableData).map(
             ([affiliateName, { transactions, sum }]) => {
               return (
-                <div key={affiliateName}>  
-                  <h4>{affiliateName}: {sum}</h4>
-                  <table className="table is-fullwidth">
+                <div className="content" key={affiliateName}>  
+                  <h4>{affiliateName}: {currencyFormatter.format(sum)}</h4>
+                  <table className="table is-fullwidth is-bordered mb-6">
                     <thead>
                       <tr>
                         <th>Data</th>
@@ -102,7 +103,7 @@
                             <td>{new Date(t.date).toLocaleString()}</td>
                             <td>{t.desc}</td>
                             <td>{t.pname}</td>
-                            <td>{t.price}</td>
+                            <td>{currencyFormatter.format(t.price)}</td>
                           </tr>
                         );
                       })}
