@@ -1,2 +1,4 @@
-.devcontainer
-node_modules
+node_modules/
+db/hubla.sqlite3
+.parcel-cache/
+dist/

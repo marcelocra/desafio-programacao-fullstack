@@ -2,15 +2,19 @@
   "name": "desafio_hubla",
   "version": "0.0.1",
   "scripts": {
-    "dev": "nodemon --watch src --watch public src/server.js",
-    "test": "jest"
+    "dev:frontend": "parcel src/frontend/index.html",
+    "dev:backend": "nodemon --watch src --watch dist src/server.js",
+    "test": "jest",
+    "prod:frontend": "parcel build src/frontend/index.html"
   },
   "author": "Marcelo Almeida <marcelocralmeida@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^7.5.0",
     "express": "^4.17.3",
-    "multer": "^1.4.4"
+    "multer": "^1.4.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "eslint": "^8.11.0",
@@ -18,6 +22,12 @@
     "eslint-plugin-react": "^7.29.4",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
+    "parcel": "^2.3.2",
     "prettier": "2.6.0"
+  },
+  "targets": {
+    "default": {
+      "distDir": "./public"
+    }
   }
 }
