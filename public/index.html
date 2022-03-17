@@ -1,206 +1,232 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hub.la Manager</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 
-  <title>Hub.la Manager</title>
-  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Don't use this in production: -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      /**
+       * Handles the form element, submitting the file provided by the user to the server.
+       *
+       * `setUpdateTransactionUi` is used to signal the table component that there is new
+       * data and that the component tree should be updated.
+       */
+      function FormComponent({ setUpdateTransactionUi }) {
+        function handleSubmit(event) {
+          // Add the spinner button to the UI, to give feedback to
+          // the user that the request is happening.
+          let submitButton = document.getElementById('submit');
+          submitButton.classList.add('is-loading');
 
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-    /**
-     * Handles the form element, submitting the file provided by the user to the server.
-     * 
-     * `setUpdateTransactionUi` is used to signal the table component that there is new
-     * data and that the component tree should be updated.
-     */
-    function FormComponent( { setUpdateTransactionUi } ) {
-      function handleSubmit (event) {
-        // Add the spinner button to the UI, to give feedback to 
-        // the user that the request is happening.
-        let submitButton = document.getElementById('submit');
-        submitButton.classList.add('is-loading');
-        
-        // Do not submit this form. We don't want a page refresh.
-        event.preventDefault();
+          // Do not submit this form. We don't want a page refresh.
+          event.preventDefault();
 
-        // Handle the form directly.
-        let formData = new FormData();
-        formData.append('products', document.getElementById('products').files[0]);
+          // Handle the form directly.
+          let formData = new FormData();
+          formData.append(
+            'products',
+            document.getElementById('products').files[0]
+          );
 
-        fetch('/upload_file', {method: 'POST', body: formData})
-          .then(response => {
+          fetch('/upload_file', {
+            method: 'POST',
+            body: formData,
+          }).then((response) => {
             // Remove the loading state.
             submitButton.classList.remove('is-loading');
 
             // Force React to update the right part of the component
             // tree without a page refresh.
-            setUpdateTransactionUi(x => !x);
+            setUpdateTransactionUi((x) => !x);
 
             // Focus the UI in the updated element.
-            document.getElementById('transactions')
-              .scrollIntoView({block: "start", behavior: "smooth"})
+            document.getElementById('transactions').scrollIntoView({
+              block: 'start',
+              behavior: 'smooth',
+            });
           });
+        }
+
+        return (
+          <form onSubmit={handleSubmit}>
+            <input type="file" id="products" />
+            <br />
+            <br />
+            <button
+              type="submit"
+              className="button is-dark is-small"
+              id="submit"
+            >
+              Enviar
+            </button>
+          </form>
+        );
       }
 
-      return (
-        <form onSubmit={handleSubmit}>
-          <input type="file" id="products" />
-          <br />
-          <br />
-          <button type="submit" className="button is-dark is-small" id="submit">
-            Enviar
-          </button>
-        </form>
-      );
-    }
+      /**
+       * Displays the database elements in a table.
+       *
+       * `updateTransactionUi` is a signal that the form component send when the
+       * transactions are updated. It forces this component to make a new async
+       * request and update the table data.
+       */
+      function TableComponent({ updateTransactionUi }) {
+        const [tableData, setTableData] = React.useState(new Map());
+        const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        });
 
-    /**
-     * Displays the database elements in a table.
-     * 
-     * `updateTransactionUi` is a signal that the form component send when the
-     * transactions are updated. It forces this component to make a new async
-     * request and update the table data.
-     */
-    function TableComponent( { updateTransactionUi } ) {
-      const [tableData, setTableData] = React.useState(new Map());
-      const currencyFormatter = new Intl.NumberFormat(
-        'pt-BR', { style: 'currency', currency: 'BRL'})
+        React.useEffect(() => {
+          fetch('/transactions')
+            .then((response) => response.json())
+            .then((transactions) => {
+              // Process the transactions to show correctly in the UI. It is a simple
+              // logic: list all transactions by producer/affiliate name and sum them
+              // up.
+              let map = new Map();
+              for (let t of transactions) {
+                if (!map.get(t.name)) {
+                  map.set(t.name, {
+                    transactions: [],
+                    sum: 0,
+                  });
+                }
 
-      React.useEffect(() => {
-        fetch('/transactions')
-          .then(response => response.json())
-          .then(transactions => {
-            // Process the transactions to show correctly in the UI. It is a simple
-            // logic: list all transactions by producer/affiliate name and sum them
-            // up.
-            let map = new Map();
-            for (let t of transactions) {
-              if (!map.get(t.name)) {
-                map.set(t.name, {transactions: [], sum: 0});
+                let affiliate = map.get(t.name);
+                affiliate.transactions.push(t);
+                if (t.op === '+') {
+                  affiliate.sum += t.price;
+                } else if (t.op === '-') {
+                  affiliate.sum -= t.price;
+                } else {
+                  // This shouldn't happen for now.
+                  console.error(
+                    "Should not happen. Check the 'operation' in the 'transaction_types' table"
+                  );
+                }
               }
-              
-              let affiliate = map.get(t.name);
-              affiliate.transactions.push(t);
-              if (t.op === '+') {
-                affiliate.sum += t.price
-              } else if (t.op === '-') {
-                affiliate.sum -= t.price
-              } else {
-                // This shouldn't happen for now.
-                console.error("Should not happen. Check the 'operation' in the 'transaction_types' table")
-              }
-            }
-            
-            setTableData(map);
-            return map;
-          })
-          .catch(err => console.err);
-      }, [updateTransactionUi]);
 
-      return (
-        <div>
-          {tableData.size !== 0 ? Array.from(tableData).map(
-            // Applying Array.from in a Map instance returns an array of
-            // pairs (2 element arrays). The first element is the key
-            // of the original Map (a string here, with the name), and
-            // the second element is an object (that has the all transactions
-            // for that affiliate, along with the sum money that they gathered).
-            ([affiliateName, { transactions, sum }]) => {
-              return (
-                <div className="content" key={affiliateName}>  
-                  <h4>{affiliateName}: {currencyFormatter.format(sum)}</h4>
-                  <table className="table is-fullwidth is-bordered mb-6">
-                    <thead>
-                      <tr>
-                        <th>Data</th>
-                        <th>Descrição</th>
-                        <th>Produto</th>
-                        <th>Preço</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transactions.map(t => {
-                        return (
-                          <tr key={t.id}>
-                            <td>{new Date(t.date).toLocaleString()}</td>
-                            <td>{t.desc}</td>
-                            <td>{t.pname}</td>
-                            <td>{currencyFormatter.format(t.price)}</td>
+              setTableData(map);
+              return map;
+            })
+            .catch((err) => console.err);
+        }, [updateTransactionUi]);
+
+        return (
+          <div>
+            {tableData.size !== 0 ? (
+              Array.from(tableData).map(
+                // Applying Array.from in a Map instance returns an array of
+                // pairs (2 element arrays). The first element is the key
+                // of the original Map (a string here, with the name), and
+                // the second element is an object (that has the all transactions
+                // for that affiliate, along with the sum money that they gathered).
+                ([affiliateName, { transactions, sum }]) => {
+                  return (
+                    <div className="content" key={affiliateName}>
+                      <h4>
+                        {affiliateName}: {currencyFormatter.format(sum)}
+                      </h4>
+                      <table className="table is-fullwidth is-bordered mb-6">
+                        <thead>
+                          <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Produto</th>
+                            <th>Preço</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                        </thead>
+                        <tbody>
+                          {transactions.map((t) => {
+                            return (
+                              <tr key={t.id}>
+                                <td>{new Date(t.date).toLocaleString()}</td>
+                                <td>{t.desc}</td>
+                                <td>{t.pname}</td>
+                                <td>{currencyFormatter.format(t.price)}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                }
               )
-            }
-          ) : <p>Nenhuma transação ainda. Carregue um arquivo.</p>}
-        </div>
-      );
-    }
+            ) : (
+              <p>Nenhuma transação ainda. Carregue um arquivo.</p>
+            )}
+          </div>
+        );
+      }
 
-    /**
-     * Main component.
-     */
-    function App() {
-      const [updateTransactionUi, setUpdateTransactionUi] = React.useState(false);
+      /**
+       * Main component.
+       */
+      function App() {
+        const [updateTransactionUi, setUpdateTransactionUi] =
+          React.useState(false);
 
-      return (
-        <div className="app">
-          <section className="section s1">
-            <div className="container has-text-centered">
-              <header className="section-header">
-                <h1 className="title is-spaced is-size-1-mobile has-text-weight-bold">
-                  Hub.la Manager
-                </h1>
-                <div className="subtitle is-size-5 is-size-4-tablet">
-                  <span className="is-block is-size-6 is-size-5-tablet s1-file">
-                    Ao escolher um arquivo, ele será processado e exibido na seção abaixo.
-                    <br />
-                    <br />
-                    <FormComponent setUpdateTransactionUi={setUpdateTransactionUi} />
-                  </span>
-                </div>
-              </header>
-            </div>
-          </section>
-          <section className="section">
-            <div className="container has-text-centered">
-              <header className="section-header s2-h1">
-                <h1 className="subtitle" id="transactions">
-                  Transações
-                </h1>
-              </header>
-            </div>
-            <div className="columns is-mobile is-centered">
-              <div className="column is-three-quarters">
-                <TableComponent updateTransactionUi={updateTransactionUi} />
+        return (
+          <div className="app">
+            <section className="section s1">
+              <div className="container has-text-centered">
+                <header className="section-header">
+                  <h1 className="title is-spaced is-size-1-mobile has-text-weight-bold">
+                    Hub.la Manager
+                  </h1>
+                  <div className="subtitle is-size-5 is-size-4-tablet">
+                    <span className="is-block is-size-6 is-size-5-tablet s1-file">
+                      Ao escolher um arquivo, ele será processado e exibido na
+                      seção abaixo.
+                      <br />
+                      <br />
+                      <FormComponent
+                        setUpdateTransactionUi={setUpdateTransactionUi}
+                      />
+                    </span>
+                  </div>
+                </header>
               </div>
-            </div>
-          </section>
-        </div>
-      );
-    }
-    
-    ReactDOM.render(
-      <App />,
-      document.getElementById('root')
-    );
+            </section>
+            <section className="section">
+              <div className="container has-text-centered">
+                <header className="section-header s2-h1">
+                  <h1 className="subtitle" id="transactions">
+                    Transações
+                  </h1>
+                </header>
+              </div>
+              <div className="columns is-mobile is-centered">
+                <div className="column is-three-quarters">
+                  <TableComponent updateTransactionUi={updateTransactionUi} />
+                </div>
+              </div>
+            </section>
+          </div>
+        );
+      }
 
-  </script>
-  <!--
+      ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+    <!--
       Note: this page is a great way to try React but it's not suitable for production.
       It slowly compiles JSX with Babel in the browser and uses a large development build of React.
 
@@ -213,6 +239,5 @@
       You can also use React without JSX, in which case you can remove Babel:
       https://reactjs.org/docs/react-without-jsx.html
     -->
-</body>
-
+  </body>
 </html>

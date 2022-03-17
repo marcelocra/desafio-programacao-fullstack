@@ -3,7 +3,7 @@ body {
 }
 
 .s1 {
-  background: linear-gradient( 180deg, #D7FF60 0%, #fff 100% );
+  background: linear-gradient(180deg, #d7ff60 0%, #fff 100%);
   padding-bottom: 0px;
 }
 
@@ -14,7 +14,11 @@ body {
   line-height: 1.5;
   padding: 15px 30px;
   border-radius: 8px;
-  background: linear-gradient( 180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.07) 0% );
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.07) 0%
+  );
 }
 
 .s2-h1 {
