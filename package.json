@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev:frontend": "parcel src/frontend/index.html",
-    "dev:backend": "nodemon --watch src --watch dist src/server.js",
+    "dev:backend": "nodemon --watch src src/server.js",
     "test": "jest",
     "prod:frontend": "parcel build src/frontend/index.html"
   },

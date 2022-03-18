@@ -2,7 +2,8 @@
 
 FROM node:16
 
-ENV NODE_ENV=production
+ARG node_env
+ENV NODE_ENV=${node_env:-production}
 
 # Take advantage of docker layers.
 WORKDIR /app

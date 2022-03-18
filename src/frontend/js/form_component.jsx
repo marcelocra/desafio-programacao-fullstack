@@ -1,4 +1,5 @@
 import React from 'react';
+import constants from '../../constants';
 
 /**
  * Handles the form element, submitting the file provided by the user to the server.
@@ -20,7 +21,7 @@ function FormComponent({ setUpdateTransactionUi }) {
     let formData = new FormData();
     formData.append('products', document.getElementById('products').files[0]);
 
-    fetch('/upload_file', {
+    fetch(constants.API_UPLOAD_FILE, {
       method: 'POST',
       body: formData,
     }).then((response) => {

@@ -6,20 +6,19 @@ const parseTransactions = require('./parser');
 function fetchAllTransactions(db) {
   return db
     .prepare(
+      `select 
+         t.id as id,
+         t.date as date,
+         t.price as price,
+         a.name as name,
+         p.name as pname,
+         tt.description as desc,
+         tt.operation as op
+       from transactions t
+       inner join products p on t.product_id = p.id
+       inner join affiliates a on t.affiliate_id = a.id
+       inner join transaction_types tt on t.transaction_type = tt.type
       `
-    select 
-        t.id as id,
-        t.date as date,
-        t.price as price,
-        a.name as name,
-        p.name as pname,
-        tt.description as desc,
-        tt.operation as op
-      from transactions t
-      inner join products p on t.product_id = p.id
-      inner join affiliates a on t.affiliate_id = a.id
-      inner join transaction_types tt on t.transaction_type = tt.type
-  `
     )
     .all();
 }

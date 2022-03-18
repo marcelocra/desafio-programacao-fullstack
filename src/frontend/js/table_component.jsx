@@ -1,5 +1,7 @@
 import React from 'react';
 
+import constants from '../../constants';
+
 /**
  * Displays the database elements in a table.
  *
@@ -15,7 +17,7 @@ function TableComponent({ updateTransactionUi }) {
   });
 
   React.useEffect(() => {
-    fetch('/transactions')
+    fetch(constants.API_TRANSACTIONS)
       .then((response) => response.json())
       .then((transactions) => {
         // Process the transactions to show correctly in the UI. It is a simple
@@ -47,7 +49,7 @@ function TableComponent({ updateTransactionUi }) {
         setTableData(map);
         return map;
       })
-      .catch((err) => console.err);
+      .catch(console.err);
   }, [updateTransactionUi]);
 
   return (
