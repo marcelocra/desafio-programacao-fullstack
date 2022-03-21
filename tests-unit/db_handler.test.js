@@ -7,7 +7,7 @@ const db = require('better-sqlite3')(testFile);
 const {
   fetchAllTransactions,
   processUploadedFileAndSaveToDatabase,
-} = require('./db_handler');
+} = require('../src/db_handler');
 
 beforeAll(() => {
   const create_database = fs.readFileSync('./db/create_database.sql', 'utf-8');

@@ -4,8 +4,8 @@
   "scripts": {
     "dev:frontend": "parcel src/frontend/index.html",
     "dev:backend": "nodemon --watch src src/server.js",
-    "test:jest": "jest",
-    "test:e2e": "playwright test -c src/frontend/js --browser firefox",
+    "test:jest": "jest ./tests-unit",
+    "test:e2e": "playwright test -c ./tests-e2e --browser firefox",
     "prod:frontend": "parcel build src/frontend/index.html"
   },
   "author": "Marcelo Almeida <marcelocralmeida@gmail.com>",

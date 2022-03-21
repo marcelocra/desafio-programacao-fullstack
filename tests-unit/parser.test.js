@@ -1,5 +1,5 @@
 /* eslint-env jest */
-const parseTransactions = require('./parser');
+const parseTransactions = require('../src/parser');
 
 var exampleLine = `12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS`;
 var exampleMultiLine = `12022-01-15T19:20:30-03:00CURSO DE BEM-ESTAR            0000012750JOSE CARLOS
