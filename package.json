@@ -4,7 +4,8 @@
   "scripts": {
     "dev:frontend": "parcel src/frontend/index.html",
     "dev:backend": "nodemon --watch src src/server.js",
-    "test": "jest",
+    "test:jest": "jest",
+    "test:e2e": "playwright test -c src/frontend/js --browser firefox",
     "prod:frontend": "parcel build src/frontend/index.html"
   },
   "author": "Marcelo Almeida <marcelocralmeida@gmail.com>",
@@ -19,6 +20,7 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.20.0",
     "eslint": "^8.11.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.29.4",
