@@ -6,6 +6,9 @@ function generateAccessToken({ email, role }) {
   });
 }
 
+/**
+ * Middleware to guard the server against requests that should be authenticated.
+ */
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];

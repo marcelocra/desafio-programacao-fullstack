@@ -131,3 +131,5 @@ Test files are in the `tests-*` folders.
 - [ ] Finish e2e tests setup.
 - [ ] Prepare a better onboarding, allow users to create their system user through the UI.
 - [ ] Add a routing library (or perhaps a framework, like Next, that already deals with that).
+- [ ] Use the database roles to allow different types of roles (editor, viewer, etc).
+- [ ] Add more security features, like CSRF protection, refresh tokens for auth, etc.

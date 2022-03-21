@@ -45,7 +45,7 @@ function UserLoggedInComponent({ setLoggedIn }) {
           <div className="navbar-start">
             <a
               className="navbar-item"
-              href="https://github.com/marcelocra/desafio-programacao-fullstack"
+              href="https://github.com/marcelocra/desafio-programacao-fullstack/tree/features"
             >
               Documentation
             </a>

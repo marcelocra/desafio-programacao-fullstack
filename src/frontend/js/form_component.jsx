@@ -15,6 +15,7 @@ function handleSubmit(event, setUpdateTransactionUi) {
   let formData = new FormData();
   formData.append('products', document.getElementById('products').files[0]);
 
+  // Make the API call to the backend.
   fetch(constants.API_UPLOAD_FILE, {
     method: 'POST',
     body: formData,

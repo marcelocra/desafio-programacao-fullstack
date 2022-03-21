@@ -1,3 +1,6 @@
+/**
+ * Processes the response object, to check if it is expired or invalid.
+ */
 function processResponseError(response) {
   if (response.status === 403) {
     alert(

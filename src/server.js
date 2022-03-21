@@ -23,13 +23,13 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Returns a JSON with the producers/affiliates transactions, prepared to be
-// used by the frontend.
+// used by the frontend. Requires authentication.
 app.get(constants.API_TRANSACTIONS, authMiddleware, (req, res) => {
   res.json(fetchAllTransactions(db));
 });
 
 // Receives the uploaded file, sent by the user, parsing, normalizing and
-// storing it in the database (sqlite).
+// storing it in the database (sqlite). Requires authentication.
 app.post(
   constants.API_UPLOAD_FILE,
   authMiddleware,
@@ -41,6 +41,8 @@ app.post(
   }
 );
 
+// Receives the user email and password and compares with what is stored in the
+// database, only generating tokens when password is correct.
 app.post(constants.API_LOG_USER, (req, res) => {
   let user = getUserByEmail(db, req.body.email);
 

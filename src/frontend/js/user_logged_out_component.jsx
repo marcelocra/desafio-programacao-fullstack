@@ -21,6 +21,7 @@ function handleSubmit({
   let submitButton = document.getElementById('submit');
   submitButton.classList.add('is-loading');
 
+  // Make the API call to the backend.
   fetch(constants.API_LOG_USER, {
     method: 'POST',
     body: JSON.stringify({ email, password }),
