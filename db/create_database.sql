@@ -59,3 +59,20 @@ CREATE TABLE IF NOT EXISTS transactions (
     ON DELETE CASCADE
     ON UPDATE NO ACTION
 );
+
+
+-------------------------------------------------------
+
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY,
+  email TEXT NOT NULL,
+  password TEXT NOT NULL,
+  role INTEGER
+);
+
+INSERT INTO users
+  (id, email, password, role)
+VALUES
+  (1, 'admin@example.com', 'admin', 1),
+  (2, 'user@example.com', 'user', 2);

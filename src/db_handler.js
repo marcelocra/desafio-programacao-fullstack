@@ -68,7 +68,25 @@ function processUploadedFileAndSaveToDatabase(db, fileAsMultilineString) {
   }
 }
 
+/**
+ * Retrieves a user from their email.
+ */
+function getUserByEmail(db, email) {
+  return db
+    .prepare(
+      `select 
+       email,
+       password,
+       role
+     from users u
+     where u.email = @email
+    `
+    )
+    .get({ email });
+}
+
 module.exports = {
   fetchAllTransactions,
   processUploadedFileAndSaveToDatabase,
+  getUserByEmail,
 };

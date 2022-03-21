@@ -1,6 +1,7 @@
 import React from 'react';
 
 import constants from '../../constants';
+import { processResponseError } from './process_response_error';
 
 /**
  * Displays the database elements in a table.
@@ -17,8 +18,18 @@ function TableComponent({ updateTransactionUi }) {
   });
 
   React.useEffect(() => {
-    fetch(constants.API_TRANSACTIONS)
-      .then((response) => response.json())
+    fetch(constants.API_TRANSACTIONS, {
+      headers: {
+        Authorization: `Basic ${document.cookie.split('token=')[1]}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+
+        return response.json();
+      })
       .then((transactions) => {
         // Process the transactions to show correctly in the UI. It is a simple
         // logic: list all transactions by producer/affiliate name and sum them
@@ -49,7 +60,7 @@ function TableComponent({ updateTransactionUi }) {
         setTableData(map);
         return map;
       })
-      .catch(console.err);
+      .catch(processResponseError);
   }, [updateTransactionUi]);
 
   return (
