@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:16
+FROM node:lts-alpine3.14
 
 ARG node_env
 ENV NODE_ENV=${node_env:-production}
@@ -12,10 +12,10 @@ RUN yarn install
 
 COPY . .
 
-# Prepare the frontend code.
-RUN yarn global add parcel@2.3.2
-RUN yarn prod:frontend
-RUN yarn global remove parcel
+# # Prepare the frontend code.
+# RUN yarn global add parcel@2.3.2
+# RUN yarn prod:frontend
+# RUN yarn global remove parcel
 
 # Prepare the sqlite3 database. If there's already a sqlite file
 # remove it first, otherwise it will conflict.
