@@ -1,84 +1,135 @@
-# Desafio de programação
+# Hubla Code Challenge
 
-O intuito desse teste é avaliar os seus conhecimentos técnicos em programação.
+Why is this file called README?
 
----
+Because it wants you to read it before doing anything else :).
 
-# Instruções para entrega do desafio
+But if you prefer to see things running first, that's ok too, haha. Just jump to the instructions below.
 
-1. Faça o fork desse repositório para a sua conta no GitHub
-2. Implemente o projeto em seu clone local
-3. Envie o link do seu repositório para seu contato Tech Recruiter na Hubla
+(You can click on the burger menu, to the left of the README file name. That allows navigation through the headings.)
 
----
+## What does this app do?
 
-# Descrição do projeto
+It follows all requirements (including extras) presented in the requirements file, which I copied below.
 
-Surgiu uma nova demanda urgente e precisamos de uma área exclusiva para fazer o upload de um arquivo das transações
-feitas na venda de produtos por nossos produtores.
+### Requirements
 
-Nossa plataforma trabalha no modelo produtor-afiliado, sendo assim um produtor pode vender seus produtos e ter 1 ou N
-afiliados também vendendo esses produtos, desde que seja paga uma comissão por venda.
+> - [x] Ter uma tela (via formulário) para fazer o upload do arquivo
+> - [x] Fazer o parser do arquivo recebido, normalizar os dados e armazená-los em um banco de dados relacional, seguindo as definições de interpretação do arquivo
+> - [x] Exibir a lista das transações de produtos importadas por produtor/afiliado, com um totalizador do valor das transações realizadas
+> - [x] Ser simples de configurar e rodar, compatível com ambiente Unix (utilizar apenas bibliotecas gratuitas ou livres)
+> - [x] Ter um README descrevendo o projeto e como fazer o setup
+> - [x] Ter documentacao das APIs que o backend chama no frontend.
 
-Sua tarefa é construir uma interface web que possibilite o upload de um arquivo de transações de produtos vendidos,
-normalizar os dados e armazená-los em um banco de dados relacional.
+### Extra requirements
 
-Você deve utilizar o arquivo [PRODUCTS.txt](PRODUCTS.txt) para fazer o teste manual da aplicação.
+> - [x] Lidar com autenticação ou autorização (mas você ganha pontos extras se fizer)
+> - [+-] Ser escrita usando algum framework específico (mas não tem problema usar)
+> - [x] Documentação da API (mas você ganha pontos extras se fizer)
+> - [x] Utilizar docker e docker-compose (mas você ganha pontos extras se fizer)
+> - [+-] Ter testes integrados/end-to-end (mas você ganha pontos extras se fizer)
 
-# Sua aplicação deve
+### Technologies and programming practices
 
-1. Ter uma tela (via formulário) para fazer o upload do arquivo
-2. Fazer o parser do arquivo recebido, normalizar os dados e armazená-los em um banco de dados relacional, seguindo as
-   definições de interpretação do arquivo
-3. Exibir a lista das transações de produtos importadas por produtor/afiliado, com um totalizador do valor das
-   transações realizadas
-4. Ser simples de configurar e rodar, compatível com ambiente Unix (utilizar apenas bibliotecas gratuitas ou livres)
-5. Ter um README descrevendo o projeto e como fazer o setup
-6. Ter documentacao das APIs que o backend chama no frontend.
+Details after the list.
 
-Sobre tecnologias e práticas de programação:
+> - [x] Escolha a linguagem que quiser
+> - [x] Use qualquer banco de dados relacional
+> - [x] Use commits pequenos no Git e escreva uma boa descrição para cada um
+> - [x] Escreva unit tests
+> - [x] Tente fazer o código mais legível e limpo possivel
+> - [x] Escreva o código (nomes e comentários) em inglês. Se se sentir confortável escreva as documentações também em inglês, mas pode ser em Português se preferir.
 
-1. Escolha a linguagem que quiser 
-2. Use qualquer banco de dados relacional
-3. Use commits pequenos no Git e escreva uma boa descrição para cada um
-4. Escreva unit tests
-5. Tente fazer o código mais legível e limpo possivel
-6. Escreva o código (nomes e comentários) em inglês. Se se sentir confortável escreva as documentações também em
-   inglês, mas pode ser em Português se preferir.
+## Instructions - How to run this project
 
-# Sua aplicação não precisa
+All you need is Docker. FYI, I'm using the following version on win10:
 
-1. Lidar com autenticação ou autorização (mas você ganha pontos extras se fizer)
-2. Ser escrita usando algum framework específico (mas não tem problema usar)
-3. Documentação da API (mas você ganha pontos extras se fizer)
-4. Utilizar docker e docker-compose (mas você ganha pontos extras se fizer)
-5. Ter testes integrados/end-to-end (mas você ganha pontos extras se fizer)
+```
+$ docker --version
+Docker version 20.10.13, build a224086
+```
 
-# Documentação do arquivo de cadastro
+To run the project, the steps are: (1) clone the repo and checkout the `features` branch; (2) build the docker image; (3) run the image as mentioned below; (4) access `localhost:8000`.
 
-| Campo    | Início | Fim | Tamanho | Descrição                                       |
-|----------|--------|-----|---------|-------------------------------------------------|
-| Tipo     | 1      | 1   | 1       | Tipo da transação                               |
-| Data     | 2      | 26  | 25      | Data - ISO Date + GMT                           |
-| Produto  | 27     | 56  | 30      | Descrição do produto                            |
-| Valor    | 57     | 66  | 10      | Valor da transação (precisa ser divido por 100) |
-| Vendedor | 67     | 86  | 20      | Nome do vendedor                                |
+```sh
+# Clone the repo…
+$ git clone https://github.com/marcelocra/desafio-programacao-fullstack
+$ cd desafio-programacao-fullstack
 
-# Documentação dos tipos de transação
+# Build the image.
+$ docker build --tag hubla-challenge .
 
-| Tipo | Descrição         | Natureza | Sinal |
-|------|-------------------|----------|-------|
-| 1    | Venda produtor    | Entrada  | +     |
-| 2    | Venda afiliado    | Entrada  | +     |
-| 3    | Comissão paga     | Saída    | -     |
-| 4    | Comissão recebida | Entrada  | +     |
+# Run the image, forwarding port 8000.
+$ docker run --rm -d -p 8000:8000 --name hubla-marcelo hubla-challenge
 
-# Avaliação
+# Access localhost:8000 in your browser...
 
-Seu projeto será avaliado de acordo com os seguintes critérios:
+# Afterwards, stop the image.
+$ docker stop hubla-marcelo
+```
 
-1. Desenvolvimento dos [requisitos básicos](#Sua-aplicação-deve)
-2. Documentação correta do setup do ambiente e execução da aplicação
-3. Cobertura de testes
+## API docs
 
-# Boa sorte!!!
+- `[GET] /` - Serves the SPA, in the `index.html` file.
+- `[POST] /log_user` - Receives email and password from the user and returns an auth token, required to make other API calls.
+- `[POST] /upload_file` - Receives a file in the described format. The file is parsed, normalized and stored in the database.
+- `[GET] /transactions` - Returns all transactions from the saved file.
+
+## Instructions - How to develop this project
+
+There are two commands to be run during development: `yarn dev:frontend` and `yarn dev:backend`.
+
+If you are doing changes to the frontend code (in the `src/frontend` folder), access `localhost:1234`. The bundler provides fast refresh capabilities there, for a very fast development workflow. And the proxy file allows that frontend to talk to the backend, which will be running in `localhost:8000`.
+
+Backend code is all code that is in `src` but not in `src/frontend`.
+
+## Architecture and technologies
+
+Today, a large number of applications use the client-server model, with a service oriented architecture. That is what I'm using here too.
+
+In more details…
+
+### Backend - Node
+
+The server (backend) is a **Node** application, running **Express** with an **SQLite** database. Authentication is done via **JSON Web Tokens** (JWT).
+
+The entrypoint is the `src/server.js` file.
+
+### Database - SQLite
+
+While SQLite might not be the best solution for large applications, it works very well for [small to medium ones](https://www.sqlite.org/whentouse.html#website), also providing a very simple "getting started" story.
+
+Here, the queries are written in SQLite dialect. Due to the simplicity of the app, I'm not using features that would help when working on a large application (database migrations, transactions, indexes, etc).
+
+If this app was going to scale, we could also introduce a database abstraction layer (e.g. Knex, Prisma, etc). Perhaps it would simplify working with the database, but could also add complexity, so I chose not to use them now.
+
+The database code is in the `db` folder and in the `db_handler.js` file. The folder has code for creating the database and adding fake data, while the file has code for interacting with the database (through the server).
+
+### Frontend - React
+
+The client (frontend) is a **React** single page application. All the code is in the `src/frontend` folder and the entrypoint is the `app.jsx` file.
+
+The code is transpiled using the **Parcel** bundler.
+
+### Tests
+
+Tests are done using **Jest** (unit) and **Playwright** (e2e).
+
+At this moment, most tests are unit tests. End-to-end (e2e) still needs some configuration (with Docker) before working.
+
+Test files are in the `tests-*` folders.
+
+## Points for improvement
+
+- [ ] Use a hashing library for passwords (NEVER store plain text passwords in the database).
+- [ ] Make a more thorough validation for the user submitted file.
+- [ ] Remove `.env` from github and migrate it to Docker
+- [ ] Use an i18n library, not to put pt-br string in code.
+- [ ] Add pagination support to the database requests, particularly in the transactions table.
+- [ ] Simplify React state handling with Redux.
+- [ ] Add TypeScript, to improve code reliability.
+- [ ] Finish e2e tests setup.
+- [ ] Prepare a better onboarding, allow users to create their system user through the UI.
+- [ ] Add a routing library (or perhaps a framework, like Next, that already deals with that).
+- [ ] Use the database roles to allow different types of roles (editor, viewer, etc).
+- [ ] Add more security features, like CSRF protection, refresh tokens for auth, etc.

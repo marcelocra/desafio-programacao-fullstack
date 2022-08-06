@@ -1,0 +1,37 @@
+{
+  "name": "desafio_hubla",
+  "version": "0.0.1",
+  "scripts": {
+    "dev:frontend": "parcel src/frontend/index.html",
+    "dev:backend": "nodemon --watch src src/server.js",
+    "test:jest": "jest ./tests-unit",
+    "test:e2e": "playwright test -c ./tests-e2e --browser firefox",
+    "prod:frontend": "parcel build src/frontend/index.html"
+  },
+  "author": "Marcelo Almeida <marcelocralmeida@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^7.5.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.20.0",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.29.4",
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.15",
+    "parcel": "^2.3.2",
+    "prettier": "2.6.0"
+  },
+  "targets": {
+    "default": {
+      "distDir": "./public"
+    }
+  }
+}
