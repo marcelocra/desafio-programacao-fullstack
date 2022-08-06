@@ -18,7 +18,7 @@ allows navigation through the headings.)
 ## What does this app do?
 
 It follows all requirements (including extras) presented in the requirements
-file, which I copied below ([original here](/README-original.md).
+file, which I copied below ([original here](/README-original.md)).
 
 ### Requirements
 
